@@ -1,0 +1,25 @@
+<!-- templates/home.html -->
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated and user.center_manager == False %}
+  Hi {{ user.username }}!
+  <p><a href="{% url 'logout' %}">logout</a></p>
+  <p><a href="{% url 'favorites' %}">favorites</a></p>
+  <p><a href="{% url 'choose_interests' %}">Choose interests</a></p>
+
+{% elif user.is_authenticated and user.center_manager == True %}
+  Hi {{ user.username }}!
+  <p><a href="{% url 'logout' %}">logout</a></p>
+  <p><a href="{% url 'favorites' %}">favorites</a></p>
+  <p><a href="{% url 'choose_interests' %}">Choose interests</a></p>
+  <p><a href="{% url 'add_center' %}">Add center</a></p>
+  <p><a href="{% url 'centers' %}">Show centers</a></p>
+{% else %}
+  <p>You are not logged in</p>
+  <a href="{% url 'login' %}">login</a> |
+  <a href="{% url 'signup' %}">signup</a>
+{% endif %}
+{% endblock %}
