@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Favorites</title>
+</head>
+<body>
+{% block content %}
+{% if user.is_authenticated %}
+  {% for z in fav %}
+    {% if user.id == z.user_id %}
+       {% for x in pos %}
+        {% if z.interest_id == x.id %}
+          {{x.name}}
+        {% endif %}
+       {% endfor %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+{% endblock %}
+</body>
+</html>
