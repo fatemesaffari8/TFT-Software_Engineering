@@ -1,0 +1,138 @@
+﻿{% load static %}
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Interests</title>
+    <link rel="shortcut icon" href="{% static "interests/image/icon-index.png" %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static "interests/css/bootstrap.css" %}">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+
+    <script src="{% static "interests/js/bootstrap.js" %}"></script>
+    <style>
+        @font-face {
+            font-family: "aa";
+            src: url("{% static "interests/font/AdobeArabic.otf" %}");
+        }
+        @font-face {
+            font-family: "b";
+            src: url("{% static "interests/font/b.ttf" %}");
+        }
+        @font-face {
+            font-family: "ad";
+            src: url("{% static "interests/font/ArchitectsDaughter.ttf" %}");
+        }
+        @font-face {
+            font-family: "zangar";
+            src: url("{% static "interests/font/zangar.ttf" %}");
+        }
+        @font-face {
+            font-family: "salamat";
+            src: url("{% static "interests/font/Salamat.ttf" %}");
+        }
+        h1 {
+            color: brown;
+            text-align: center;
+            font-family: "salamat";
+            font-size: 40px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #d43f3a;
+            border-radius: 4px;
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            font-family: "salamat";
+            font-size: 30px;
+            cursor: pointer;
+            transition: all 0.5s;
+            height: 20%;
+            width: 90%;
+        }
+
+        .button:hover {
+            background-color:#DA70D6;
+        }
+        .button:active {
+            background-color: #3e8e41;
+            transform: translateY(4px);
+        }
+
+    </style>
+</head>
+<body style="background-color: #f2f2f2">
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="" style="font-family: ad">Tehran Fun Tour</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right" style="font-family: aa;font-size: 30px;height: 45px">
+            <li><a href="/profile/{{ user.id }}/"><span class="glyphicon"></span>پروفایل</a></li>
+            <li class="dropdown" dir="rtl">
+            <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">تنظیمات<span class="caret"></span></a>
+                <ul class="dropdown-menu" style="font-size: large">
+                    <li><a href="changeEmail.php">تغییر ایمیل</a></li>
+                    <li><a href="changePassword.php">تغییر رمز عبور</a></li>
+                </ul>
+            </li>
+            <li><a href="{% url 'logout' %}" dir="rtl">خروج</a></li>
+            <p class="navbar-text" dir="rtl" style="margin-right: 20px">
+
+                    نام کاربری شما:
+                {{ user.username }}
+            </p>
+        </ul>
+    </div>
+</nav>
+<div class="row" dir="rtl">
+    <div class="col-md-3" style="margin: 50px 0 0 70px">
+    <h1>علایق ثبت نشده</h1>
+{% for a in interests %}
+    {% if a.id not in currentUserInterests %}
+<form  method="post">
+ {% csrf_token %}
+    <input type="hidden" name="fav" value="{{a.id}}">
+    <center>
+    <button type="submit" class="btn button center-block">
+        {{ a.name }}
+        <br>
+        (افزودن)
+    </button>
+        </center>
+    </form>
+    {% endif %}
+    {% endfor %}
+
+
+</div>
+    <div class="col-md-5" style="margin: 50px 0 0 0">
+    <h1>مکان های مورد علاقه ی خود را انتخاب کنید:</h1>
+    <p style="font-family: salamat;text-align: center;font-size: 30px">با وارد کردن مکان های مورد علاقه خود از اضافه شدن مکان های جدید،تخفیف ها و... مطلع شوید.</p>
+    <br><br><br>
+    <img src="{% static "interests/image/in2.png" %}" class="img img-responsive center-block">
+    </div>
+    <div class="col-md-3" style="margin: 50px 0 0 5px">
+    <h1>علایق ثبت شده</h1>
+{% for a in interests %}
+    {% if a.id in currentUserInterests %}
+ <form  method="post">
+ {% csrf_token %}
+     <input type="hidden" name="fav" value="{{a.id}}">
+     <center>
+     <button type="submit" class="btn button center-block">
+        {{ a.name }}
+        <br>
+        (حذف)
+    </button>
+         </center>
+ </form>
+    {% endif %}
+    {% endfor %}
+
+
+</div>
+</div>
+</body>
+</html>

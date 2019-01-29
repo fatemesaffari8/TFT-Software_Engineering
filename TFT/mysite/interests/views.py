@@ -11,51 +11,34 @@ def interests(request):
         "fav": data,
         "pos": data2
     }
-    return render(request,'favorites.html',fav)
+    return render(request,'userProfile.html',fav)
 
-def choose_interests(request):
-    current_user = request.user
-    data = Interest.objects.all()
-    data2 = UserInterests.objects.filter(user_id=current_user)
-
-    z = []
-    for x in data:
+def choose_and_edit_interests(request):
+    interests = Interest.objects.all()
+    currentUser = request.user.id
+    if request.method == 'POST':
+        fav = request.POST.get("fav")
+        intFav=int(fav)
+        userInterests = UserInterests.objects.filter(user_id=currentUser)
         flag=0
-        for y in data2:
-            if x.id == y.interest_id:
-                flag=1
+        for a in userInterests:
+            if a.interest_id == intFav:
+                flag =1
+        if flag == 1:
+            UserInterests.objects.filter(user_id=currentUser, interest_id=intFav).delete()
+            flag = 0
+        else:
+            new_entry = UserInterests(user_id=currentUser, interest_id=intFav)
+            new_entry.save()
 
-        if flag == 0 :
-            z.append(x.id)
-    pos = {
-        "id": z,
-        "pos":data
-    }
-    return render(request,'choose_interests.html',pos)
-
-def get_interest_data(request):
-   current_user = request.user.id
-   int_id=request.POST.get("title")
-   d,form = UserInterests.objects.get_or_create(interest_id=int_id,user_id=current_user)
-   d.save()
-
-   current_user = request.user
-   data = Interest.objects.all()
-   data2 = UserInterests.objects.filter(user_id=current_user)
-
-   z = []
-   for x in data:
-       flag = 0
-       for y in data2:
-           if x.id == y.interest_id:
-               flag = 1
-
-       if flag == 0:
-           z.append(x.id)
-   pos = {
-       "id": z,
-       "pos": data
-   }
-   return render(request, 'choose_interests.html', pos)
+    currentUserInterests=UserInterests.objects.filter(user_id=currentUser)
+    CUIds=[]
+    for a in currentUserInterests:
+        CUIds.append(a.interest_id)
+    data={
+            "interests":interests,
+            "currentUserInterests":CUIds,
+        }
+    return render(request,'interest.html',data)
 
 
