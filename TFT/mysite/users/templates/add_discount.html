@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Discount</title>
+</head>
+<body>
+
+
+<form method = "post">
+{% csrf_token %}
+<select name = "center">
+    {%for a in centerNames%}
+  <option  value="{{a}}" >{{a}}</option>
+    {%endfor%}
+</select>
+
+<br><br>
+
+  New Cost ( In Toman ):
+  <input type="number" name="cost" min="1" max="100000">
+    <br><br>Expiration Date:
+  <input type="date" name="expiration_date">
+    <br><br>
+<input type="submit" onclick="alert('Success')" value="Submit">
+</form>
+
+</body>
+</html>

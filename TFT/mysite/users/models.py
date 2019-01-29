@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from phone_field import PhoneField
 
@@ -10,13 +11,13 @@ GENGER_CHOICES = [
     ('female', 'Female'),
 ]
 TYPE_CHOICES = [
-    ('restaurant and coffee shop', 'restaurant and coffee shop'),
-    ('Cinemas and theaters and concerts', 'Cinemas and theaters and concerts'),
-    ('Amusement Park', 'Amusement Park'),
-    ('shopping center', 'shopping center'),
-    ('female', 'Sports'),
-    ('Park and free space', 'Park and free space'),
-    ('Other', 'Other'),
+    ('رستوران وکافی شاپ', 'رستوران وکافی شاپ'),
+    ('سینما ، کنسرت وتئاتر', 'سینما ، کنسرت وتئاتر'),
+    ('شهربازی', 'شهربازی'),
+    ('مرکز خرید', 'مرکز خرید'),
+    ('مجموعه ورزشی', 'مجموعه ورزشی'),
+    ('پارک وفضای آزاد', 'پارک وفضای آزاد'),
+    ('غیره', 'غیره'),
 ]
 
 class Interest(models.Model):
@@ -58,7 +59,7 @@ class Center(models.Model):
 
 
 class CenterHours(models.Model):
-    center_id=models.ForeignKey(Center, unique=False, on_delete=models.DO_NOTHING)
+    center_id=models.ForeignKey(Center, unique=False, on_delete=models.CASCADE)
     day=models.CharField(max_length=100)
     open_time=models.CharField(max_length=100)
     close_time=models.CharField(max_length=100)
@@ -66,8 +67,17 @@ class CenterHours(models.Model):
 
 
 class ManagerCenters(models.Model):
-    manager = models.ForeignKey(settings.AUTH_USER_MODEL, unique=False, on_delete=models.DO_NOTHING)
+    manager = models.ForeignKey(settings.AUTH_USER_MODEL, unique=False, on_delete=models.CASCADE)
     center = models.ForeignKey(Center, unique=True, on_delete=models.DO_NOTHING)
     def __unicode__(self):
         return self.user.username
+
+
+class Discounts(models.Model):
+    center_id=models.ForeignKey(Center, unique=False, on_delete=models.CASCADE)
+    new_cost=models.IntegerField(help_text='In Toman')
+    expiration_date=models.DateField()
+    rate=models.IntegerField()
+
+
 

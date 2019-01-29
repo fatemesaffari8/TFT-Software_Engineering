@@ -10,4 +10,6 @@ urlpatterns = [
     path('choose_interests/interests/', views.choose_interests, name='interests'),
     path('choose_interests_action/', views.get_interest_data, name='choose_interests_action'),
     path('centers/', views.show_centers, name='centers'),
+    path('suggesting_centers/', views.suggest_centers, name='suggesting_centers'),
+    path('add_discount/', views.AddDiscount, name='add_discount'),
 ]

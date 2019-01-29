@@ -1,10 +1,12 @@
+import datetime
+
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response
 
 from django.urls import reverse_lazy
 from django.views import generic
 
-from .models import Interest, UserInterests, CenterHours, Center, ManagerCenters
+from .models import Interest, UserInterests, CenterHours, Center, ManagerCenters, Discounts
 from .forms import CustomUserCreationForm, AddCenter
 
 
@@ -137,3 +139,108 @@ def show_centers(request):
         "center":data
     }
     return render(request, 'centers.html', data3)
+
+def suggest_centers(request):
+    counter=0
+    userId=request.user.id
+    userInterestNames= []
+    returnedCenters= []
+    userInterests=UserInterests.objects.filter(user_id=userId)
+    interest=Interest.objects.all()
+    centers=Center.objects.all()
+    discontList=Discounts.objects.all()
+
+
+    for a in userInterests:
+        for b in interest:
+            if a.interest_id == b.id:
+                userInterestNames.append(b.name)
+
+    if len(userInterestNames) == 0:
+        for a in centers:
+            if a != None and counter < 10:
+                returnedCenters.append(a)
+                counter=counter+1
+
+    n=None
+    if len(userInterestNames) <10 and len(userInterestNames) != 0:
+        for a in range(len(userInterestNames)):
+            for b in centers:
+                 if userInterestNames[a] == b.type:
+                    returnedCenters.append(b)
+
+        for a in range(10-len(userInterestNames)):
+            for b in centers:
+                try:
+                    if b not in returnedCenters:
+                        n=b
+                except Exception:
+                    print("ERROR")
+            if n not in returnedCenters:
+             returnedCenters.append(n)
+
+
+    if len(userInterestNames) >=10 :
+        for a in userInterestNames:
+            for b in centers:
+                if a == b.type:
+                    returnedCenters.append(b)
+
+    returnedDiscontList=[]
+    for a in discontList:
+        if a.expiration_date >= datetime.date.today():
+            returnedDiscontList.append(a)
+    data={
+        "centers": returnedCenters,
+        "discontList":returnedDiscontList,
+    }
+
+    return render(request, 'suggesting_centers.html', data)
+
+
+def AddDiscount(request):
+    current_user = request.user.id
+    data1 = Center.objects.all()
+    data2 = ManagerCenters.objects.filter(manager_id=current_user)
+    z = []
+    m= []
+    for x in data1:
+        for y in data2:
+            if (x.id == y.center_id):
+                z.append(x.name)
+                m.append(x.ticket_cost)
+
+    if request.method == 'POST':
+        centerName = request.POST.get('center')
+        newCost = request.POST.get('cost')
+        expirationDate = request.POST.get('expiration_date')
+        centers= Center.objects.all()
+        for a in centers:
+            if a.name == centerName:
+                centerId=a.id
+                centerOldCost=a.ticket_cost
+                break
+
+        rate=((int(centerOldCost)-int(newCost))/int(centerOldCost))*100
+        if centerId != None and centerOldCost != None:
+         d, form = Discounts.objects.get_or_create(new_cost=newCost,
+                                                  expiration_date=expirationDate,
+                                                  center_id_id=centerId,rate=rate)
+         d.save()
+         return render(request,'home.html')
+
+
+
+
+
+
+    data = {
+        "centerNames": z,
+    }
+    return render(request, 'add_discount.html', data)
+
+
+
+
+
+
