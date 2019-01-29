@@ -10,9 +10,17 @@
    {% for b in discontList %}
      {% if a.id == b.center_id_id  and b.rate != 0 %}
      <h3>  %قیمت جدید : {{b.new_cost}} -- میزان تخفیف : {{b.rate}} </h3>
-     {% endif %}<br></br>
+     {% endif %}
    {%endfor%}
+<form action="{% url 'center_actions_and_details' %}"  method = "post" >
+{% csrf_token %}
+    <input type="hidden" name="details" value="{{a.id}}">
+      <input type="submit"  value="Details" class="card-text mb-auto" >
+</form>
+<br><br>----------------------------------------------------------------------------------<br>
 {%endfor%}
+
+
 
 </body>
 </html>

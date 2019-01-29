@@ -1,5 +1,7 @@
 from django.conf.urls import url
 from django.urls import path
+
+
 from . import views
 
 urlpatterns = [
@@ -14,5 +16,6 @@ urlpatterns = [
     path('add_discount/', views.AddDiscount, name='add_discount'),
     path('suggest_Package/', views.suggestPackage, name='suggest_Package'),
     path('suggesting_Package/', views.suggestPackage, name='suggesting_Package'),
+    path('center_actions_and_details/', views.centerRate, name='center_actions_and_details'),
 
 ]

@@ -1,15 +1,16 @@
 
-from random import randint
+import datetime
 import random
-from django.http import HttpResponseRedirect
-from django.shortcuts import render, render_to_response
+from random import randint
 
+from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import render, render_to_response, redirect
 from django.urls import reverse_lazy
 from django.views import generic
 
-import datetime
-from .models import Interest, UserInterests, CenterHours, Center, ManagerCenters, Discounts
-from .forms import CustomUserCreationForm, AddCenter
+from .forms import AddCenter, CustomUserCreationForm
+from .models import (Center, CenterHours, Discounts, Interest, ManagerCenters,
+                     UserInterests, StarRating)
 
 
 class SignUp(generic.CreateView):
@@ -142,6 +143,8 @@ def show_centers(request):
     }
     return render(request, 'centers.html', data3)
 
+
+
 def suggest_centers(request):
     counter=0
     userId=request.user.id
@@ -197,6 +200,15 @@ def suggest_centers(request):
         "discontList":returnedDiscontList,
     }
 
+
+    if request.method == 'POST':
+        centerID = request.POST.get("details")
+        data2={
+            "centerId":centerID,
+
+        }
+        return render(request,'center_actions_and_details.html',data2)
+
     return render(request, 'suggesting_centers.html', data)
 
 
@@ -217,6 +229,11 @@ def AddDiscount(request):
         newCost = request.POST.get('cost')
         expirationDate = request.POST.get('expiration_date')
         centers= Center.objects.all()
+        if newCost == '' or expirationDate == '':
+            data2 = {
+                "centerNames": z,
+            }
+            return render(request, 'add_discount.html', data2)
         for a in centers:
             if a.name == centerName:
                 centerId=a.id
@@ -224,15 +241,18 @@ def AddDiscount(request):
                 break
 
         rate=((int(centerOldCost)-int(newCost))/int(centerOldCost))*100
-        if centerId != None and centerOldCost != None:
-         d, form = Discounts.objects.get_or_create(new_cost=newCost,
-                                                  expiration_date=expirationDate,
-                                                  center_id_id=centerId,rate=rate)
-         d.save()
-         return render(request,'home.html')
-
-
-
+        discounts = Discounts.objects.filter(center_id=centerId)
+        if discounts.count() > 0:
+            for k in discounts:
+                if k.expiration_date >= datetime.date.today():
+                    return HttpResponse('<h1>Error! This center have a discount</h1>')
+                else:
+                    if centerId != None and centerOldCost != None:
+                        d, form = Discounts.objects.get_or_create(new_cost=newCost,
+                                                                  expiration_date=expirationDate,
+                                                                  center_id_id=centerId, rate=rate)
+                        d.save()
+                        return render(request, 'home.html')
 
 
 
@@ -251,7 +271,12 @@ def suggestPackage(request):
         timeTo = request.POST.get('timeTo')
         day = request.POST.get('day')
         cost = request.POST.get('cost')
-
+        if timeFrom == '' or timeTo == '' or cost == '':
+            days = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+            data2 = {
+                "day": days
+            }
+            return render(request, 'suggest_Package.html',data2)
         centers=Center.objects.all()
         centersHours=CenterHours.objects.all()
         (h1, m1) = timeFrom.split(':')
@@ -331,4 +356,84 @@ def suggestPackage(request):
         "day":days
     }
     return render(request, 'suggest_Package.html',data2)
+
+
+
+
+
+
+
+def centerRate(request):
+    if request.method == 'POST':
+        centerId = request.POST.get("details")
+        innercenter = Center.objects.get(id=centerId)
+        userId = request.user
+        userRate = request.POST.get("rating")
+        if userRate != None:
+            sc = StarRating.objects.filter(user_id=userId,center_id=innercenter)
+            if sc.count() > 0 :
+                StarRating.objects.filter(user_id_id=userId,center_id=innercenter).update(rate=userRate)
+            else:
+                d, form = StarRating.objects.get_or_create(center_id=innercenter, user_id=userId, rate=int(userRate))
+                d.save()
+
+
+
+    flag=None
+    #centerDiscount=Discounts.objects.filter(center_id=centerId)
+    if Discounts.objects.filter(center_id=centerId).count() > 0 :
+        centerDiscount = Discounts.objects.filter(center_id=centerId)
+        for a in centerDiscount:
+            if a.expiration_date >= datetime.date.today():
+                flag=a.new_cost
+                centers=Center.objects.filter(id=centerId)
+                for l in centers:
+                    if l.ticket_cost == flag:
+                        flag=None
+
+    stars_5 = StarRating.objects.filter(rate=5,center_id=centerId).count()
+    stars_4 = StarRating.objects.filter(rate=4,center_id=centerId).count()
+    stars_3 = StarRating.objects.filter(rate=3,center_id=centerId).count()
+    stars_2 = StarRating.objects.filter(rate=2,center_id=centerId).count()
+    stars_1 = StarRating.objects.filter(rate=1,center_id=centerId).count()
+    sum=(stars_5 + stars_4 + stars_3 + stars_2 + stars_1)
+    if sum != 0 :
+     avg_5 = (stars_5 * 100) / sum
+     avg_4 = (stars_4 * 100) / sum
+     avg_3 = (stars_3 * 100) / sum
+     avg_2 = (stars_2 * 100) / sum
+     avg_1 = (stars_1 * 100) / sum
+     avg_all=((5*stars_5)+(4*stars_4)+(3*stars_3)+(2*stars_2)+(1*stars_1))/sum
+    else:
+        avg_5 = 0
+        avg_4 = 0
+        avg_3 = 0
+        avg_2 = 0
+        avg_1 = 0
+        avg_all = 0
+    numOfRev = stars_5 + stars_4 + stars_3 + stars_2 + stars_1
+    data={
+        "xx":centerId,
+        'centerInfo':Center.objects.get(id=centerId),
+        'centerDis':flag,
+        'stars_5': stars_5,
+        'stars_4': stars_4,
+        'stars_3': stars_3,
+        'stars_2': stars_2,
+        'stars_1': stars_1,
+        'avg_5': avg_5,
+        'avg_4': avg_4,
+        'avg_3': avg_3,
+        'avg_2': avg_2,
+        'avg_1': avg_1,
+        'all':numOfRev,
+        'avg_all': avg_all,
+
+    }
+    return render(request, 'center_actions_and_details.html',data)
+
+
+
+
+
 

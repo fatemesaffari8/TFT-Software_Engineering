@@ -2,8 +2,9 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 
-from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import CustomUser, UserInterests, Interest, Center, ManagerCenters, CenterHours
+from .forms import CustomUserChangeForm, CustomUserCreationForm
+from .models import (Center, CenterHours, CustomUser, Interest, ManagerCenters,
+                     UserInterests)
 
 
 class CustomUserAdmin(UserAdmin):
@@ -18,4 +19,3 @@ admin.site.register(Interest)
 admin.site.register(Center)
 admin.site.register(ManagerCenters)
 admin.site.register(CenterHours)
-
