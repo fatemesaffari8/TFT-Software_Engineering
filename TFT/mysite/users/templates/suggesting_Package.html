@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>suggesting_Package</title>
+</head>
+<body>
+<h1>Package 1</h1>
+{%if error != None%}
+<h3>{{error}}</h3>
+{%endif%}
+{%for a in p1%}
+    {{a.name}}<br>
+{%endfor%}
+<br><br>
+Remaining Money: {{remainingMoney}} Toman
+<br>----------------------------<br>
+<h1>Package 2</h1>
+{%if error2 != None%}
+<h3>{{error2}}</h3>
+{%endif%}
+{%for a in p2%}
+    {{a.name}}<br>
+{%endfor%}
+<br><br>
+Remaining Money: {{remainingMoney2}} Toman
+<br><br>
+<button value="Refresh Page" onClick="window.location.reload()"> Get different packages</button>
+</body>
+</html>

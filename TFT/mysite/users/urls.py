@@ -12,4 +12,7 @@ urlpatterns = [
     path('centers/', views.show_centers, name='centers'),
     path('suggesting_centers/', views.suggest_centers, name='suggesting_centers'),
     path('add_discount/', views.AddDiscount, name='add_discount'),
+    path('suggest_Package/', views.suggestPackage, name='suggest_Package'),
+    path('suggesting_Package/', views.suggestPackage, name='suggesting_Package'),
+
 ]
