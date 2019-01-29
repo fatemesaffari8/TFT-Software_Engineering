@@ -43,6 +43,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users.apps.UsersConfig',
+    'centers.apps.CentersConfig',
+    'interests.apps.InterestsConfig',
+    'reviews.apps.ReviewsConfig',
+    'suggestions.apps.SuggestionsConfig',
     'phone_field',
     'django_extensions',
 ]

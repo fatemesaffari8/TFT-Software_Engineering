@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add center</title>
+</head>
+<body>
+{% block content %}
+{% if user.is_authenticated and user.center_manager == True%}
+<h2>Add center</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+
+ <h3>Hours of work</h3>
+         <br>Saturday:<br>
+           from  <input type="time" name="sat-from" style="width:100px">
+            to  <input type="time" name="sat-to" style="width:100px">
+    <br><br>Sunday:<br>
+           from  <input type="time" name="sun-from" style="width:100px">
+            to  <input type="time" name="sun-to" style="width:100px">
+    <br><br>Monday:<br>
+           from  <input type="time" name="mon-from" style="width:100px">
+            to  <input type="time" name="mon-to" style="width:100px">
+    <br><br>Tuesday:<br>
+           from  <input type="time" name="tue-from" style="width:100px">
+            to  <input type="time" name="tue-to" style="width:100px">
+    <br><br>Wednesday:<br>
+           from  <input type="time" name="wed-from" style="width:100px">
+            to  <input type="time" name="wed-to" style="width:100px">
+    <br><br>Thursday:<br>
+           from  <input type="time" name="thu-from" style="width:100px">
+            to  <input type="time" name="thu-to" style="width:100px">
+    <br><br>Friday:<br>
+           from  <input type="time" name="fri-from" style="width:100px">
+            to  <input type="time" name="fri-to" style="width:100px">
+
+                <br><br>
+
+
+  <button type="submit">Add center</button>
+ </form>
+{% endif %}
+{% endblock %}
+</body>
+</html>

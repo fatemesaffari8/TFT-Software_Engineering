@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Centers</title>
+</head>
+<body>
+{% block content %}
+{% if user.is_authenticated and user.center_manager == True%}
+  {% for m in center %}
+       {% for n in id %}
+        {% if m.id == n %}
+          {{m.name}}<br>
+        {% endif %}
+       {% endfor %}
+  {% endfor %}
+{% endif %}
+{% endblock %}
+</body>
+</html>
