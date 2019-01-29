@@ -1,46 +1,170 @@
-<!DOCTYPE html>
-<html lang="en">
+﻿{% load static %}
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Add center</title>
-</head>
-<body>
-{% block content %}
-{% if user.is_authenticated and user.center_manager == True%}
-<h2>Add center</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
+    <meta charset="utf-8">
+    <title>Add Center</title>
+    <link rel="shortcut icon" href="{% static "centers/image/icon-index.png" %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static "centers/css/bootstrap.css" %}">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <script src="{% static "centers/js/bootstrap.js" %}"></script>
+    <style>
+        @font-face {
+            font-family: "aa";
+            src: url("{% static "centers/font/AdobeArabic.otf" %}");
+        }
+        @font-face {
+            font-family: "b";
+            src: url("{% static "centers/font/b.ttf" %}");
+        }
+        @font-face {
+            font-family: "ad";
+            src: url("{% static "centers/font/ArchitectsDaughter.ttf" %}");
+        }
+        @font-face {
+            font-family: "zangar";
+            src: url("{% static "centers/font/zangar.ttf" %}");
+        }
+        @font-face {
+            font-family: "salamat";
+            src: url("{% static "centers/font/Salamat.ttf" %}");
+        }
+        .card {
+            margin: 60px 100px 15px 100px;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.5s;
+            background-color: white;
+            border-radius: 25px;
+            opacity: 0.8;
+            font-family:aa;
+            font-size:30px;
+            color: #663399;
+        }
+        .card:hover {
+            box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+        }
+        .mybutton {
+            font-size: 25px;
+            border-radius: 10px;
+            width: 60%;
+            transition: 0.3s;
+            background-color: #9932CC;
+            color: white;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        }
+        .mybutton:hover {
+            color: white;
+            background-color: #DA70D6;
+            box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
+        }
+        body{
+            background-image: url({% static "centers/image/event.jpg" %});
+            background-size: cover;
+            background-attachment: fixed;
+        }
 
- <h3>Hours of work</h3>
-         <br>Saturday:<br>
-           from  <input type="time" name="sat-from" style="width:100px">
-            to  <input type="time" name="sat-to" style="width:100px">
-    <br><br>Sunday:<br>
-           from  <input type="time" name="sun-from" style="width:100px">
-            to  <input type="time" name="sun-to" style="width:100px">
-    <br><br>Monday:<br>
-           from  <input type="time" name="mon-from" style="width:100px">
-            to  <input type="time" name="mon-to" style="width:100px">
-    <br><br>Tuesday:<br>
-           from  <input type="time" name="tue-from" style="width:100px">
-            to  <input type="time" name="tue-to" style="width:100px">
-    <br><br>Wednesday:<br>
-           from  <input type="time" name="wed-from" style="width:100px">
-            to  <input type="time" name="wed-to" style="width:100px">
-    <br><br>Thursday:<br>
-           from  <input type="time" name="thu-from" style="width:100px">
-            to  <input type="time" name="thu-to" style="width:100px">
-    <br><br>Friday:<br>
-           from  <input type="time" name="fri-from" style="width:100px">
-            to  <input type="time" name="fri-to" style="width:100px">
+    </style>
+</head>
+<body style="background-color: #f2f2f2">
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="" style="font-family: ad">Tehran Fun Tour</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right" style="font-family: aa;font-size: 30px;height: 45px">
+            <li><a href="{% url 'home' %}"><span class="glyphicon"></span>داشبورد</a></li>
+            <li class="dropdown" dir="rtl">
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">تنظیمات<span class="caret"></span></a>
+                <ul class="dropdown-menu" style="font-size: large">
+                    <li><a href="changeEmail.php">تغییر ایمیل</a></li>
+                    <li><a href="changePassword.php">تغییر رمز عبور</a></li>
+                </ul>
+            </li>
+            <li><a href="{% url 'logout' %}" dir="rtl">خروج</a></li>
+            <p class="navbar-text" dir="rtl" style="margin-right: 20px">
+
+                    نام کاربری شما:
+                {{ user.username }}
+            </p>
+        </ul>
+    </div>
+</nav>
+
+<div class="row" dir="rtl">
+    <div class="card container-fluid">
+        <p style="font-family:b; font-size: 35px">
+            افزودن مرکز
+            <br>
+        </p>
+        <form method="post">
+  {% csrf_token %}
+                نام مرکز تفریحی یا رویداد:
+
+            {{ form.name }}
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            آدرس مرکز:
+            {{ form.address }}
+            <br><br>
+                شماره تماس:
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+           {{ form.phone_number }}
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                ایمیل:
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            {{ form.email }}
+            <br><br>
+نوع مرکز یا رویداد را انتخاب کنید:
+            {{ form.type }}
+                <br><br>
+هزینه ی بلیط (به تومان)
+            {{ form.ticket_cost }}
+                شرح مکان تفریحی یا رویداد:
+            {{ form.description }}
+            <br><br>
+ساعت کاری:
+            <br>
+
+            <div class="col-md-4">
+                دوشنبه ها:<br>
+            از  <input type="time" name="mon-from" style="width:100px">
+            تا  <input type="time" name="mon-to" style="width:100px">
+    <br><br>
+                پنج شنبه ها:<br>
+            از  <input type="time" name="thu-from" style="width:100px">
+            تا  <input type="time" name="thu-to" style="width:100px">
+    <br><br>
+            </div>
+
+             <div class="col-md-4">
+                یک شنبه ها:<br>
+           از   <input type="time" name="sun-from" style="width:100px">
+            تا  <input type="time" name="sun-to" style="width:100px">
+    <br><br>
+                چهارشنبه ها:<br>
+           از   <input type="time" name="wed-from" style="width:100px">
+            تا  <input type="time" name="wed-to" style="width:100px">
+    <br><br>
+            جمعه ها:    <br>
+            از  <input type="time" name="fri-from" style="width:100px">
+            تا  <input type="time" name="fri-to" style="width:100px">
 
                 <br><br>
+            </div>
 
+            <div class="col-md-4">
+            شنبه ها:<br>
+           از  <input type="time" name="sat-from" style="width:100px">
+            تا <input type="time" name="sat-to" style="width:100px">
+    <br><br>
+                سه شنبه ها:<br>
+           از   <input type="time" name="tue-from" style="width:100px">
+            تا  <input type="time" name="tue-to" style="width:100px">
+    <br><br>
+            </div>
 
-  <button type="submit">Add center</button>
- </form>
-{% endif %}
-{% endblock %}
+                <br><br>
+              <button type="submit" class="mybutton center-block">افزودن</button>
+            </form>
+    </div>
+</div>
 </body>
 </html>

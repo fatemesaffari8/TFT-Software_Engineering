@@ -1,10 +1,13 @@
 import datetime
+import random
 
 from django.http import HttpResponse
 from django.shortcuts import render
 
 from centers.forms import AddCenter
 from centers.models import Center, CenterHours, ManagerCenters, Discounts
+
+from reviews.models import StarRating
 
 
 def add_center(request):
@@ -88,7 +91,7 @@ def AddDiscount(request):
     m= []
     for x in data1:
         for y in data2:
-            if (x.id == y.center_id):
+            if (x.id == y.center_id and x.ticket_cost != 0):
                 z.append(x.name)
                 m.append(x.ticket_cost)
 
@@ -111,11 +114,11 @@ def AddDiscount(request):
         rate=((int(centerOldCost)-int(newCost))/int(centerOldCost))*100
         discounts = Discounts.objects.filter(center_id=centerId)
         if int(newCost) > centerOldCost:
-            return HttpResponse('<h1>new cost > old cost , It is not discount!!!</h1>')
+            return render(request, "add_discount.html", {"error1": "قیمت جدید از قیمت قبلی بیشتر است!"})
         elif discounts.count() > 0 :
             for k in discounts:
                 if k.expiration_date >= datetime.date.today():
-                    return HttpResponse('<h1>Error! This center have a discount</h1>')
+                    return render(request, "add_discount.html", {"error2": "این مرکز تخفیف دارد!"})
 
         else:
             if centerId != None and centerOldCost != None:
@@ -132,3 +135,127 @@ def AddDiscount(request):
     }
     return render(request, 'add_discount.html', data)
 
+
+def find_centers(request):
+    return render(request, 'find_centers.html')
+def findCenterByCategory(request):
+    try:
+        listCenters=[]
+        all_centers = Center.objects.all()
+        for center in all_centers:
+            if center.type == request.POST['category']:
+                listCenters.append(center)
+    except (KeyError, Center.DoesNotExist):
+        return render(request, 'find_centers.html',{"listCenters": listCenters,
+                                                       "error_message": "error"})
+    else:
+        return render(request,'find_centers.html',{"listCenters": listCenters})
+
+def findCenterByTime(request):
+    from datetime import datetime
+    if request.method == 'POST':
+        day = request.POST.get('day')
+        time = request.POST.get('time')
+        centersByDay=CenterHours.objects.filter(day=day)
+        timeSt = datetime.strptime(time, '%H:%M')
+        returnedCenters=[]
+        for a in centersByDay:
+            if time >= a.open_time and time <= a.close_time and a.id not in returnedCenters:
+                returnedCenters.append(a.center_id_id)
+        centers=[]
+        allCenters=Center.objects.all()
+        centerNum = Center.objects.all().count()
+        r = list(range(centerNum))
+        random.shuffle(r)
+
+        for a in r:
+            for b in returnedCenters:
+                if allCenters[a].id == b and len(centers) < 5:
+                    centers.append(allCenters[a])
+
+
+        data={
+            "centers":centers,
+        }
+
+    return render(request, 'find_centers.html',data)
+
+
+
+def centersFilters(request):
+
+    allCenters=Center.objects.all()
+    filteredCenters = allCenters
+    choosedType = 'كل مراكز'
+    filter = None
+
+    centersByCost=allCenters.order_by('ticket_cost')
+
+    rating = StarRating.objects.values_list('center_id_id', flat=True).distinct()
+    centerByRate = rating.order_by('-avg_all')
+
+    centerByDiscount1 = Discounts.objects.all()
+    centerByDiscount = []
+    for a in centerByDiscount1:
+        if a.expiration_date >= datetime.date.today():
+            centerByDiscount.append(a)
+    centerByDiscount3=sorted(centerByDiscount, key=lambda Discounts: Discounts.rate)
+    centerTypes = []
+    centerTypes.append('None')
+    centerTypes.append('كل مراكز')
+    for a in allCenters:
+        if a.type not in centerTypes:
+            centerTypes.append(a.type)
+
+    if request.method == 'POST':
+        choosedType=request.POST.get('centerType')
+        if choosedType != 'None':
+            filteredCenters = Center.objects.filter(type=choosedType)
+        if choosedType == 'كل مراكز':
+            filteredCenters = allCenters
+        filter=request.POST.get('filter')
+
+        if filter == 'قيمت بليط':
+            filteredCenters = centersByCost
+            nameOfFilter = filter
+
+        elif filter == 'امتیاز كاربران':
+            centers=[]
+            for a in centerByRate:
+                for b in allCenters:
+                    if a == b.id:
+                        centers.append(b)
+            for d in allCenters:
+                if d not in centers:
+                    centers.append(d)
+            nameOfFilter = filter
+            filteredCenters = centers
+
+
+        elif filter == "میزان تخفیف":
+           nameOfFilter = filter
+           centers2=[]
+           for d in centerByDiscount3:
+                for e in allCenters:
+                    if d.center_id_id == e.id:
+                        centers2.append(e)
+           filteredCenters = centers2
+
+
+
+
+
+    if choosedType != None and filter == None:
+        nameOfFilter = choosedType
+
+
+
+
+    data={
+        'centerTypes':centerTypes,
+        'filteredCenters':filteredCenters,
+        'nameOfFilter':nameOfFilter,
+    }
+
+
+    return render(request,'centerFilters.html',data)

@@ -57,71 +57,77 @@
         }
     </style>
 </head>
-<body style="background-color: #8E98A1">
+<body style="background-color: #f2f2f2">
+<div>
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
         <div class="navbar-header">
             <a class="navbar-brand" href="" style="font-family: ad">Tehran Fun Tour</a>
         </div>
         <ul class="nav navbar-nav navbar-right" style="font-family: aa;font-size: 30px;height: 45px">
-            <li><a href="{% url 'home' %}"><span class="glyphicon"></span>داشبورد</a></li>
+            <li><a href="{% url 'find_centers' %}"><span class="glyphicon"></span>یافتن تفریح</a></li>
             <li><a href="/profile/{{ user.id }}/"><span class="glyphicon"></span>پروفایل کاربر</a></li>
-            <li class="dropdown" dir="rtl">
-            <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">تنظیمات<span class="caret"></span></a>
-                <ul class="dropdown-menu" style="font-size: large">
-                    <li><a href="changeEmail.php">تغییر ایمیل</a></li>
-                    <li><a href="changePassword.php">تغییر رمز عبور</a></li>
-                </ul>
-            </li>
             <li><a href="{% url 'logout' %}" dir="rtl">خروج</a></li>
             <p class="navbar-text" dir="rtl" style="margin-right: 20px">
-                    نام کاربری شما:
+                نام کاربری شما:
                 {{ user.username }}
             </p>
         </ul>
     </div>
 </nav>
+</div>
+
 <center>
-<div class="row" style="margin-top: 45px">
-        <img src="{% static "centers/image/manage.jpg" %}" class="img-responsive img-circle">
+<div dir="rtl" style="margin-top: 100px; font-family: aa; font-size: 25px">
+    <div>
+    <form method = "post">
+{% csrf_token %}
+ <strong>نوع : </strong>
+        <select name = "centerType" id="sel_id" onchange="this.form.submit();">
+    {%for a in centerTypes%}
+  <option  value="{{a}}" >{{a}}</option>
+    {%endfor%}
+</select>
+   | <input type="submit" name="filter"  value="قيمت بليط" > |
+    <input type="submit" name="filter"  value="امتیاز كاربران" > |
+    <input type="submit" name="filter"  value="میزان تخفیف" >
+    </form>
+
+
+    </div>
+</div>
+<p style="font-family: aa; font-size: 25px" dir="rtl">
+ترتیب مراکز بر اساس : {{ nameOfFilter }}
+</p>
+
+<div class="row">
+
+
+    {% for a in filteredCenters %}
+<div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<div class="col-md-4" dir="rtl">
+    <div class="card" style="height: 400px">
+        <div class="img">
+            <img src="{% static "interests/image/in2.png" %}" style="height: 100px" width="100px">
+        </div>
+        <h2>{{ a.name }}<br><span>{{ a.type }}</span></h2>
+        <p> {{ a.description }}</p>
+        <p> {{ a.ticket_cost }}</p>
+        <form action="{% url 'center_actions_and_details' %}"  method = "post" >
+                        {% csrf_token %}
+        <p><input type="hidden" name="details" value="{{a.id}}">
+            <input type="submit"  value="مشاهده ی اطلاعات مرکز" class="example_a" ></p>
+        </form>
+
+    </div>
+</div>
+
+</div>
+{% endfor %}
+
+
 </div>
 </center>
-<div class="row">
-    {% if user.is_authenticated and user.center_manager == True%}
-    {% for m in center %}
-       {% for n in id %}
-        {% if m.id == n %}
-            <div class="col-md-4 " dir="rtl">
-            <div class="card" style="height: 370px">
-            <p style="font-family:b; font-size: 40px">
-                {{m.name}}<br>
-            </p>
-            <img src="{% static "centers/image/Location_Icon.png" %}" width="50px" height="50px">
-            آدرس:
-            <br>
-            {{ m.address }}<br>
-            <img src="{% static "centers/image/phone.png" %}" width="50px" height="50px">
-            تلفن تماس:
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            {{ m.phone_number }}
-                <br>
-                <img src="{% static "centers/image/at.png" %}" class="img-circle" width="50px" height="50px" style="margin-top: 5px">
-            ایمیل:
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            {{ m.email }} <br>
-                {% if m.ticket_cost != 0 %}
-            <img src="{% static "centers/image/money.png" %}" class="img-circle" width="50px" height="50px" style="margin-top: 5px">
-قیمت:
-                {{ m.ticket_cost }}
-            {% endif %}
-
-
-            </div>
-            </div>
-        {% endif %}
-       {% endfor %}
-    {% endfor %}
-    {% endif %}
-</div>
 </body>
 </html>

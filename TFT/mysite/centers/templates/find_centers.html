@@ -1,0 +1,172 @@
+﻿{% load static %}
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Dashboard</title>
+    <link rel="shortcut icon" href="{% static "centers/image/icon-userPanel.png" %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static "centers/css/bootstrap.css" %}">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="{% static "centers/js/bootstrap.js" %}"></script>
+    <style>
+        @font-face {
+            font-family: "aa";
+            src: url("{% static "centers/font/AdobeArabic.otf" %}");
+        }
+        @font-face {
+            font-family: "b";
+            src: url("{% static "centers/font/b.ttf" %}");
+        }
+        @font-face {
+            font-family: "ad";
+            src: url("{% static "centers/font/ArchitectsDaughter.ttf" %}");
+        }
+        @font-face {
+            font-family: "zangar";
+            src: url("{% static "centers/font/zangar.ttf" %}");
+        }
+        @font-face {
+            font-family: "salamat";
+            src: url("{% static "centers/font/Salamat.ttf" %}");
+        }
+        .card {
+            margin: 100px 25px 55px 25px;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.5s;
+            background-color: #696969;
+            border-radius: 25px;
+            opacity: 0.9;
+            font-family:aa;
+            font-size:30px;
+            color: #696969;
+        }
+        .card:hover {
+            box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+        }
+        .mybutton {
+            font-size: 25px;
+            border-radius: 10px;
+            width: 60%;
+            transition: 0.3s;
+            background-color: #D8BFD8;
+            color: #696969;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        }
+        .mybutton:hover {
+            color: white;
+            background-color: #FFA07A;
+            box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
+        }
+        body{
+            background-image: url("{% static "centers/image/admin.jpg" %}");
+            background-size: cover;
+            background-attachment: fixed;
+        }
+    </style>
+</head>
+<body style="background-color: #f2f2f2">
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="" style="font-family: ad">Tehran Fun Tour</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right" style="font-family: aa;font-size: 30px;height: 45px">
+            <li><a href="{% url 'centerFilters' %}"><span class="glyphicon"></span>مشاهده ی همه ی مراکز</a></li>
+            <li><a href="{% url 'suggest_Package' %}"><span class="glyphicon"></span>پکیج پیشنهادی</a></li>
+            <li><a href="/profile/{{ user.id }}/"><span class="glyphicon"></span>پروفایل کاربر</a></li>
+            <li><a href="{% url 'logout' %}" dir="rtl">خروج</a></li>
+            <p class="navbar-text" dir="rtl" style="margin-right: 20px">
+                نام کاربری شما:
+                {{ user.username }}
+            </p>
+        </ul>
+    </div>
+</nav>
+<div class="row">
+    <div class="col-md-6" dir="rtl">
+        <div class="card container-fluid">
+            <p style="font-family:b; font-size: 40px; color: #f2f2f2; margin-bottom: 50px">
+                جستجو بر اساس نوع مکان تفریحی
+                <br>
+            </p>
+            <p style="color: #f2f2f2; margin-bottom: 50px">
+                {% for center in listCenters%}
+                    <li style="color: #f2f2f2;"> نام مرکز:{{ center.name }}</li>
+                    <br>
+                    <form action="{% url 'center_actions_and_details' %}"  method = "post" >
+                        {% csrf_token %}
+                        <input type="hidden" name="details" value="{{center.id}}">
+                        <input type="submit"  value="مشاهده ی اطلاعات مرکز" class="mybutton center-block" >
+                    </form>
+                {% endfor %}
+            <p style="color: #f2f2f2; margin-bottom: 50px">
+            نوع مکان تفریحی مورد نظر خود را انتخاب کنید تا تمامی مکان های
+                تفریحی آن دسته برای شما نمایش داده شوند.
+            </p>
+            <form action="{% url 'findCenterByCategory' %}" method="post">
+                <p style="color: #f2f2f2">
+                    {% csrf_token %}
+                    <input type="radio" name="category" value="رستوران وکافی شاپ" style="margin-right: 50px"> رستوران و کافی شاپ
+                    <input type="radio" name="category" value="سینما ، کنسرت وتئاتر" style="margin-right: 15px"> سینما و تئاتر و کنسرت
+                    <input type="radio" name="category" value="شهربازی" style="margin-right: 15px"> شهربازی
+                        <br>
+                    <input type="radio" name="category" value="مرکز خرید" style="margin-right: 50px"> مرکز خرید
+                    <input type="radio" name="category" value="مجموعه ی ورزشی" style="margin-right: 15px"> مجموعه ی ورزشی
+                    <input type="radio" name="category" value="پارک و فضای آزاد" style="margin-right: 15px">پارک و فضای آزاد
+                    <input type="radio" name="category" value="سایر" style="margin-right: 15px"> سایر
+                    <input type="submit" value="تایید" class="btn mybutton center-block" style="margin-top: 50px; margin-bottom: 50px">
+                </p>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-6" dir="rtl">
+        <div class="card container-fluid">
+            <p style="font-family:b; font-size:40px; color: #f2f2f2">
+                یافتن هوشمند تفریح
+                <br>
+
+        <p style="color: #f2f2f2; margin-bottom: 50px">
+                {% for a in centers %}
+                    <li style="color: #f2f2f2;"> نام مرکز:{{ a.name }}</li>
+                    <br>
+                    <form action="{% url 'center_actions_and_details' %}"  method = "post" >
+                        {% csrf_token %}
+                        <input type="hidden" name="details" value="{{a.id}}">
+                        <input type="submit"  value="مشاهده ی اطلاعات مرکز" class="mybutton center-block" >
+                    </form>
+                {% endfor %}
+
+
+                <form action="{% url 'findCenterByTime' %}" method="post">
+                    <p style="color: #f2f2f2">
+                        روز مورد نظر خود را انتخاب کنید:
+                        <br>
+                    </p>
+                    <center>
+                    <p style="color: #f2f2f2">
+                        {% csrf_token %}
+                    <input type="radio" name="day" value="Saturday" checked> شنبه
+                    <input type="radio" name="day" value="Sunday"> یک شنبه
+                    <input type="radio" name="day" value="Monday"> دوشنبه
+                    <input type="radio" name="day" value="Tuesday"> سه شنبه
+                    <input type="radio" name="day" value="Wednesday"> چهارشنبه
+                    <input type="radio" name="day" value="Thursday"> پنج شنبه
+                    <input type="radio" name="day" value="Friday"> جمعه<br>
+                    </p>
+                    </center>
+                    <p style="color: #f2f2f2">
+                        <br>
+                        زمان (ساعت) مورد نظر خود را انتخاب کنید:
+                    <br>
+                    </p>
+                    <input type="time" name="time" required="required" class="center-block" style="width:70%">
+
+                    <br>
+                    <button type="submit" class="btn mybutton center-block">تایید</button>
+                </form>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
